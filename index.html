@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XAMPP Mobile Control Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6baf;
+            --secondary-color: #3a5683;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 15px;
+        }
+        
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .header p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        /* Dashboard Grid */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        /* Service Card */
+        .service-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .service-card .service-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .service-card .service-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .service-card .service-title {
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        .service-card .service-status {
+            margin-left: auto;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .status-running {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+        
+        .status-stopped {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .service-card .service-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn i {
+            margin-right: 5px;
+        }
+        
+        .btn-start {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-stop {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-config {
+            background-color: var(--info-color);
+            color: white;
+        }
+        
+        .btn-admin {
+            background-color: var(--warning-color);
+            color: #212529;
+        }
+        
+        .btn-shell {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        /* Logs Section */
+        .logs-container {
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .logs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .logs-title {
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        .logs-content {
+            height: 150px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            white-space: pre-wrap;
+            border: 1px solid #ddd;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .service-controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 5px;
+        }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 100;
+            max-width: 300px;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .notification.success {
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .notification.error {
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .notification.info {
+            border-left: 4px solid var(--info-color);
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            overflow-x: auto;
+        }
+        
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .tab.active {
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Form controls */
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+        
+        /* Path display */
+        .path-display {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            word-break: break-all;
+        }
+        
+        /* Config editor */
+        .config-editor {
+            width: 100%;
+            height: 200px;
+            font-family: 'Courier New', monospace;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>XAMPP Mobile Control Panel</h1>
+        <p>Manage your local development environment</p>
+    </div>
+    
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" data-tab="dashboard">Dashboard</div>
+            <div class="tab" data-tab="logs">Logs</div>
+            <div class="tab" data-tab="settings">Settings</div>
+            <div class="tab" data-tab="config">Config Editor</div>
+        </div>
+        
+        <div class="tab-content active" id="dashboard">
+            <div class="dashboard">
+                <!-- Apache Card -->
+                <div class="service-card" id="apache-card">
+                    <div class="service-header">
+                        <div class="service-icon" style="background-color: #d9534f;">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="service-title">Apache Web Server</div>
+                        <div class="service-status status-stopped" id="apache-status">Stopped</div>
+                    </div>
+                    <p>Port: 80/443 | PID: <span id="apache-pid">-</span></p>
+                    <div class="service-controls">
+                        <button class="btn btn-start" id="apache-start"><i class="fas fa-play"></i> Start</button>
+                        <button class="btn btn-stop" id="apache-stop" disabled><i class="fas fa-stop"></i> Stop</button>
+                        <button class="btn btn-config" id="apache-config"><i class="fas fa-cog"></i> Config</button>
+                        <button class="btn btn-admin" id="apache-admin"><i class="fas fa-external-link-alt"></i> Admin</button>
+                    </div>
+                </div>
+                
+                <!-- MySQL Card -->
+                <div class="service-card" id="mysql-card">
+                    <div class="service-header">
+                        <div class="service-icon" style="background-color: #5bc0de;">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="service-title">MySQL Database</div>
+                        <div class="service-status status-stopped" id="mysql-status">Stopped</div>
+                    </div>
+                    <p>Port: 3306 | PID: <span id="mysql-pid">-</span></p>
+                    <div class="service-controls">
+                        <button class="btn btn-start" id="mysql-start"><i class="fas fa-play"></i> Start</button>
+                        <button class="btn btn-stop" id="mysql-stop" disabled><i class="fas fa-stop"></i> Stop</button>
+                        <button class="btn btn-shell" id="mysql-shell"><i class="fas fa-terminal"></i> Shell</button>
+                        <button class="btn btn-admin" id="mysql-admin"><i class="fas fa-external-link-alt"></i> Admin</button>
+                    </div>
+                </div>
+                
+                <!-- FileZilla Card -->
+                <div class="service-card" id="filezilla-card">
+                    <div class="service-header">
+                        <div class="service-icon" style="background-color: #f0ad4e;">
+                            <i class="fas fa-file-upload"></i>
+                        </div>
+                        <div class="service-title">FileZilla FTP</div>
+                        <div class="service-status status-stopped" id="filezilla-status">Stopped</div>
+                    </div>
+                    <p>Port: 21 | PID: <span id="filezilla-pid">-</span></p>
+                    <div class="service-controls">
+                        <button class="btn btn-start" id="filezilla-start"><i class="fas fa-play"></i> Start</button>
+                        <button class="btn btn-stop" id="filezilla-stop" disabled><i class="fas fa-stop"></i> Stop</button>
+                        <button class="btn btn-config" id="filezilla-config"><i class="fas fa-cog"></i> Config</button>
+                        <button class="btn btn-admin" id="filezilla-admin"><i class="fas fa-external-link-alt"></i> Admin</button>
+                    </div>
+                </div>
+                
+                <!-- Mercury Card -->
+                <div class="service-card" id="mercury-card">
+                    <div class="service-header">
+                        <div class="service-icon" style="background-color: #428bca;">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="service-title">Mercury Mail</div>
+                        <div class="service-status status-stopped" id="mercury-status">Stopped</div>
+                    </div>
+                    <p>Port: 25/110/143 | PID: <span id="mercury-pid">-</span></p>
+                    <div class="service-controls">
+                        <button class="btn btn-start" id="mercury-start"><i class="fas fa-play"></i> Start</button>
+                        <button class="btn btn-stop" id="mercury-stop" disabled><i class="fas fa-stop"></i> Stop</button>
+                        <button class="btn btn-config" id="mercury-config"><i class="fas fa-cog"></i> Config</button>
+                        <button class="btn btn-admin" id="mercury-admin"><i class="fas fa-external-link-alt"></i> Admin</button>
+                    </div>
+                </div>
+                
+                <!-- Tomcat Card -->
+                <div class="service-card" id="tomcat-card">
+                    <div class="service-header">
+                        <div class="service-icon" style="background-color: #333;">
+                            <i class="fas fa-coffee"></i>
+                        </div>
+                        <div class="service-title">Tomcat Server</div>
+                        <div class="service-status status-stopped" id="tomcat-status">Stopped</div>
+                    </div>
+                    <p>Port: 8080 | PID: <span id="tomcat-pid">-</span></p>
+                    <div class="service-controls">
+                        <button class="btn btn-start" id="tomcat-start"><i class="fas fa-play"></i> Start</button>
+                        <button class="btn btn-stop" id="tomcat-stop" disabled><i class="fas fa-stop"></i> Stop</button>
+                        <button class="btn btn-config" id="tomcat-config"><i class="fas fa-cog"></i> Config</button>
+                        <button class="btn btn-admin" id="tomcat-admin"><i class="fas fa-external-link-alt"></i> Admin</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="logs">
+            <div class="logs-container">
+                <div class="logs-header">
+                    <div class="logs-title">System Logs</div>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="log-selector" class="form-control">
+                            <option value="apache">Apache</option>
+                            <option value="mysql">MySQL</option>
+                            <option value="filezilla">FileZilla</option>
+                            <option value="mercury">Mercury</option>
+                            <option value="tomcat">Tomcat</option>
+                        </select>
+                        <button class="btn btn-config" id="refresh-logs"><i class="fas fa-sync-alt"></i> Refresh</button>
+                        <button class="btn btn-config" id="clear-logs"><i class="fas fa-trash"></i> Clear</button>
+                    </div>
+                </div>
+                <div class="logs-content" id="log-content">
+                    Select a service to view logs...
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="settings">
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon" style="background-color: #6c757d;">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="service-title">Application Settings</div>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <div style="margin-bottom: 15px;">
+                        <label for="xampp-path">XAMPP Installation Path</label>
+                        <div class="path-display" id="current-path-display">Not set</div>
+                        <input type="text" id="xampp-path" class="form-control" placeholder="C:\xampp or /opt/lampp">
+                        <button class="btn btn-config" id="browse-path" style="margin-top: 5px; width: 100%;">
+                            <i class="fas fa-folder-open"></i> Browse
+                        </button>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label for="theme-selector">Theme</label>
+                        <select id="theme-selector" class="form-control">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="blue">Blue</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label>
+                            <input type="checkbox" id="auto-start"> Auto-start services on app launch
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label>
+                            <input type="checkbox" id="notifications" checked> Enable notifications
+                        </label>
+                    </div>
+                    
+                    <button class="btn btn-config" style="width: 100%;" id="save-settings">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="config">
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon" style="background-color: #6c757d;">
+                        <i class="fas fa-file-code"></i>
+                    </div>
+                    <div class="service-title">Configuration Editor</div>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <div style="margin-bottom: 10px;">
+                        <label for="config-file-selector">Select Configuration File:</label>
+                        <select id="config-file-selector" class="form-control">
+                            <option value="">-- Select a file --</option>
+                            <option value="httpd.conf">Apache (httpd.conf)</option>
+                            <option value="my.ini">MySQL (my.ini)</option>
+                            <option value="php.ini">PHP (php.ini)</option>
+                            <option value="FileZilla Server.xml">FileZilla (FileZilla Server.xml)</option>
+                            <option value="mercury.ini">Mercury (mercury.ini)</option>
+                            <option value="server.xml">Tomcat (server.xml)</option>
+                        </select>
+                    </div>
+                    
+                    <textarea id="config-editor" class="config-editor" placeholder="Select a configuration file to edit..." disabled></textarea>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button class="btn btn-config" id="load-config" disabled style="flex: 1;">
+                            <i class="fas fa-file-import"></i> Load
+                        </button>
+                        <button class="btn btn-success" id="save-config" disabled style="flex: 1;">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <div id="notification-message">Operation completed successfully</div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs and contents
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding content
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Service control buttons
+            const services = ['apache', 'mysql', 'filezilla', 'mercury', 'tomcat'];
+            
+            // Initialize settings
+            let settings = {
+                xamppPath: '',
+                theme: 'light',
+                autoStart: false,
+                notifications: true
+            };
+            
+            // Load settings from localStorage if available
+            if (localStorage.getItem('xamppControlSettings')) {
+                settings = JSON.parse(localStorage.getItem('xamppControlSettings'));
+                applySettings();
+            }
+            
+            // Apply settings to UI
+            function applySettings() {
+                document.getElementById('xampp-path').value = settings.xamppPath;
+                document.getElementById('current-path-display').textContent = settings.xamppPath || 'Not set';
+                document.getElementById('theme-selector').value = settings.theme;
+                document.getElementById('auto-start').checked = settings.autoStart;
+                document.getElementById('notifications').checked = settings.notifications;
+                
+                // Apply theme
+                document.body.className = '';
+                if (settings.theme === 'dark') {
+                    document.body.classList.add('dark-theme');
+                } else if (settings.theme === 'blue') {
+                    document.body.classList.add('blue-theme');
+                }
+            }
+            
+            // Service control functions
+            services.forEach(service => {
+                // Start button
+                document.getElementById(`${service}-start`).addEventListener('click', function() {
+                    startService(service);
+                });
+                
+                // Stop button
+                document.getElementById(`${service}-stop`).addEventListener('click', function() {
+                    stopService(service);
+                });
+                
+                // Config button
+                document.getElementById(`${service}-config`).addEventListener('click', function() {
+                    if (!settings.xamppPath) {
+                        showNotification('Please set XAMPP path in settings first', 'error');
+                        return;
+                    }
+                    
+                    // Switch to config editor tab and select the appropriate file
+                    document.querySelector('.tab[data-tab="config"]').click();
+                    
+                    let configFile = '';
+                    switch(service) {
+                        case 'apache':
+                            configFile = 'httpd.conf';
+                            break;
+                        case 'mysql':
+                            configFile = 'my.ini';
+                            break;
+                        case 'filezilla':
+                            configFile = 'FileZilla Server.xml';
+                            break;
+                        case 'mercury':
+                            configFile = 'mercury.ini';
+                            break;
+                        case 'tomcat':
+                            configFile = 'server.xml';
+                            break;
+                    }
+                    
+                    document.getElementById('config-file-selector').value = configFile;
+                    loadConfigFile(configFile);
+                });
+                
+                // Admin button
+                document.getElementById(`${service}-admin`).addEventListener('click', function() {
+                    if (!settings.xamppPath) {
+                        showNotification('Please set XAMPP path in settings first', 'error');
+                        return;
+                    }
+                    
+                    let url = '';
+                    switch(service) {
+                        case 'apache':
+                            url = 'http://localhost';
+                            break;
+                        case 'mysql':
+                            url = 'http://localhost/phpmyadmin';
+                            break;
+                        case 'filezilla':
+                            url = 'http://localhost/filezilla';
+                            break;
+                        case 'mercury':
+                            url = 'http://localhost/mercury';
+                            break;
+                        case 'tomcat':
+                            url = 'http://localhost:8080';
+                            break;
+                    }
+                    
+                    showNotification(`Opening ${service} admin panel at ${url}`, 'info');
+                    // In a real app, this would open the URL in the default browser
+                    setTimeout(() => {
+                        showNotification(`${service} admin panel should open in your browser`, 'success');
+                    }, 1000);
+                });
+            });
+            
+            // MySQL Shell button
+            document.getElementById('mysql-shell').addEventListener('click', function() {
+                if (!settings.xamppPath) {
+                    showNotification('Please set XAMPP path in settings first', 'error');
+                    return;
+                }
+                
+                showNotification('Opening MySQL shell...', 'info');
+                // In a real app, this would open a terminal/command prompt with mysql command
+                setTimeout(() => {
+                    showNotification('MySQL shell should open in a new terminal window', 'success');
+                }, 1000);
+            });
+            
+            // Logs selector
+            document.getElementById('log-selector').addEventListener('change', function() {
+                updateLogs(this.value);
+            });
+            
+            // Refresh logs button
+            document.getElementById('refresh-logs').addEventListener('click', function() {
+                const currentLog = document.getElementById('log-selector').value;
+                updateLogs(currentLog);
+                showNotification('Logs refreshed', 'success');
+            });
+            
+            // Clear logs button
+            document.getElementById('clear-logs').addEventListener('click', function() {
+                document.getElementById('log-content').textContent = 'Logs cleared';
+                showNotification('Logs cleared', 'success');
+            });
+            
+            // Save settings
+            document.getElementById('save-settings').addEventListener('click', function() {
+                showLoading();
+                
+                settings.xamppPath = document.getElementById('xampp-path').value.trim();
+                settings.theme = document.getElementById('theme-selector').value;
+                settings.autoStart = document.getElementById('auto-start').checked;
+                settings.notifications = document.getElementById('notifications').checked;
+                
+                // Save to localStorage
+                localStorage.setItem('xamppControlSettings', JSON.stringify(settings));
+                
+                setTimeout(() => {
+                    applySettings();
+                    hideLoading();
+                    showNotification('Settings saved successfully', 'success');
+                }, 1000);
+            });
+            
+            // Browse path button
+            document.getElementById('browse-path').addEventListener('click', function() {
+                // In a real app, this would open a file browser dialog
+                // For this demo, we'll just simulate it
+                showNotification('Please enter the XAMPP path manually in the input field', 'info');
+            });
+            
+            // Config file selector
+            document.getElementById('config-file-selector').addEventListener('change', function() {
+                const file = this.value;
+                document.getElementById('load-config').disabled = !file || !settings.xamppPath;
+                document.getElementById('save-config').disabled = true;
+                
+                if (!file) {
+                    document.getElementById('config-editor').value = '';
+                    document.getElementById('config-editor').placeholder = 'Select a configuration file to edit...';
+                    document.getElementById('config-editor').disabled = true;
+                } else {
+                    document.getElementById('config-editor').placeholder = `Select "${file}" and click Load to edit`;
+                }
+            });
+            
+            // Load config button
+            document.getElementById('load-config').addEventListener('click', function() {
+                const file = document.getElementById('config-file-selector').value;
+                loadConfigFile(file);
+            });
+            
+            // Save config button
+            document.getElementById('save-config').addEventListener('click', function() {
+                const file = document.getElementById('config-file-selector').value;
+                const content = document.getElementById('config-editor').value;
+                
+                showLoading();
+                setTimeout(() => {
+                    hideLoading();
+                    showNotification(`Configuration saved to ${file}`, 'success');
+                    document.getElementById('save-config').disabled = true;
+                }, 1500);
+            });
+            
+            // Config editor content change
+            document.getElementById('config-editor').addEventListener('input', function() {
+                document.getElementById('save-config').disabled = false;
+            });
+            
+            // Function to load a config file
+            function loadConfigFile(file) {
+                if (!settings.xamppPath) {
+                    showNotification('Please set XAMPP path in settings first', 'error');
+                    return;
+                }
+                
+                showLoading();
+                
+                // Simulate loading a config file
+                setTimeout(() => {
+                    // These are simulated config file contents
+                    const configContents = {
+                        'httpd.conf': `# Apache HTTP Server Configuration File\nServerRoot "${settings.xamppPath}/apache"\nListen 80\n\nLoadModule access_compat_module modules/mod_access_compat.so\nLoadModule actions_module modules/mod_actions.so\n\n<Directory />\n    AllowOverride none\n    Require all denied\n</Directory>`,
+                        
+                        'my.ini': `# MySQL Server Configuration File\n[mysqld]\nport=3306\nbasedir="${settings.xamppPath}/mysql"\ndatadir="${settings.xamppPath}/mysql/data"\nmax_connections=100\n\n[client]\nport=3306\nsocket="${settings.xamppPath}/mysql/mysql.sock"`,
+                        
+                        'php.ini': `; PHP Configuration File\n[PHP]\nengine = On\nshort_open_tag = Off\nerror_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT\ndisplay_errors = Off\n\nextension_dir = "${settings.xamppPath}/php/ext"`,
+                        
+                        'FileZilla Server.xml': `<?xml version="1.0" encoding="UTF-8"?>\n<FileZillaServer>\n    <Settings>\n        <Item name="Admin port" type="numeric">14147</Item>\n        <Item name="Admin password">12345</Item>\n        <Item name="Admin ip bindings">\n            <Item>*</Item>\n        </Item>\n    </Settings>\n</FileZillaServer>`,
+                        
+                        'mercury.ini': `; Mercury Mail Transport System Configuration\n[General]\nProgramPath=${settings.xamppPath}/mercury\nDataPath=${settings.xamppPath}/mercury\n\n[SMTP]\nPort=25\n\n[POP3]\nPort=110`,
+                        
+                        'server.xml': `<?xml version="1.0" encoding="UTF-8"?>\n<Server port="8005" shutdown="SHUTDOWN">\n    <Service name="Catalina">\n        <Connector port="8080" protocol="HTTP/1.1"\n                   connectionTimeout="20000"\n                   redirectPort="8443" />\n        <Engine name="Catalina" defaultHost="localhost">\n            <Host name="localhost" appBase="webapps"\n                  unpackWARs="true" autoDeploy="true">\n            </Host>\n        </Engine>\n    </Service>\n</Server>`
+                    };
+                    
+                    document.getElementById('config-editor').value = configContents[file] || `# Could not load ${file}\n# Please check the XAMPP path in settings`;
+                    document.getElementById('config-editor').disabled = false;
+                    document.getElementById('save-config').disabled = true;
+                    
+                    hideLoading();
+                    showNotification(`Loaded configuration from ${file}`, 'success');
+                }, 1000);
+            }
+            
+            // Simulate initial service status check
+            checkServiceStatus();
+            
+            // Function to start a service
+            function startService(service) {
+                if (!settings.xamppPath) {
+                    showNotification('Please set XAMPP path in settings first', 'error');
+                    return;
+                }
+                
+                showLoading();
+                const card = document.getElementById(`${service}-card`);
+                const status = document.getElementById(`${service}-status`);
+                const startBtn = document.getElementById(`${service}-start`);
+                const stopBtn = document.getElementById(`${service}-stop`);
+                
+                // Simulate service starting
+                setTimeout(() => {
+                    status.textContent = 'Running';
+                    status.classList.remove('status-stopped');
+                    status.classList.add('status-running');
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    
+                    // Update PID (simulated)
+                    document.getElementById(`${service}-pid`).textContent = Math.floor(Math.random() * 9000) + 1000;
+                    
+                    hideLoading();
+                    showNotification(`${service} started successfully at ${settings.xamppPath}`, 'success');
+                    
+                    // Update logs
+                    if (document.getElementById('log-selector').value === service) {
+                        updateLogs(service);
+                    }
+                }, 1500);
+            }
+            
+            // Function to stop a service
+            function stopService(service) {
+                showLoading();
+                const card = document.getElementById(`${service}-card`);
+                const status = document.getElementById(`${service}-status`);
+                const startBtn = document.getElementById(`${service}-start`);
+                const stopBtn = document.getElementById(`${service}-stop`);
+                
+                // Simulate service stopping
+                setTimeout(() => {
+                    status.textContent = 'Stopped';
+                    status.classList.remove('status-running');
+                    status.classList.add('status-stopped');
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    
+                    // Clear PID
+                    document.getElementById(`${service}-pid`).textContent = '-';
+                    
+                    hideLoading();
+                    showNotification(`${service} stopped successfully`, 'success');
+                    
+                    // Update logs
+                    if (document.getElementById('log-selector').value === service) {
+                        updateLogs(service);
+                    }
+                }, 1000);
+            }
+            
+            // Function to check service status (simulated)
+            function checkServiceStatus() {
+                showLoading();
+                setTimeout(() => {
+                    // Randomly set some services as running for demo purposes
+                    const runningServices = ['apache', 'mysql'];
+                    
+                    services.forEach(service => {
+                        const isRunning = runningServices.includes(service);
+                        const status = document.getElementById(`${service}-status`);
+                        const startBtn = document.getElementById(`${service}-start`);
+                        const stopBtn = document.getElementById(`${service}-stop`);
+                        
+                        if (isRunning) {
+                            status.textContent = 'Running';
+                            status.classList.remove('status-stopped');
+                            status.classList.add('status-running');
+                            startBtn.disabled = true;
+                            stopBtn.disabled = false;
+                            document.getElementById(`${service}-pid`).textContent = Math.floor(Math.random() * 9000) + 1000;
+                        } else {
+                            status.textContent = 'Stopped';
+                            status.classList.remove('status-running');
+                            status.classList.add('status-stopped');
+                            startBtn.disabled = false;
+                            stopBtn.disabled = true;
+                            document.getElementById(`${service}-pid`).textContent = '-';
+                        }
+                    });
+                    
+                    hideLoading();
+                }, 1000);
+            }
+            
+            // Function to update logs display
+            function updateLogs(service) {
+                showLoading();
+                const logContent = document.getElementById('log-content');
+                
+                // Simulated logs for each service
+                const logs = {
+                    apache: `[${new Date().toLocaleTimeString()}] Apache/2.4.46 (Win64) configured\n` +
+                            `[${new Date().toLocaleTimeString()}] Server built: Aug 14 2020 16:14:16\n` +
+                            `[${new Date().toLocaleTimeString()}] Server's Module Magic Number: 20120211:84\n` +
+                            `[${new Date().toLocaleTimeString()}] Listening on 0.0.0.0:80\n` +
+                            `[${new Date().toLocaleTimeString()}] Listening on [::]:80\n` +
+                            `[${new Date().toLocaleTimeString()}] AH00489: Apache/2.4.46 (Win64) configured -- resuming normal operations\n`,
+                    
+                    mysql: `[${new Date().toLocaleTimeString()}] InnoDB: Mutexes and rw_locks use Windows interlocked functions\n` +
+                           `[${new Date().toLocaleTimeString()}] InnoDB: Uses event mutexes\n` +
+                           `[${new Date().toLocaleTimeString()}] InnoDB: Compressed tables use zlib 1.2.11\n` +
+                           `[${new Date().toLocaleTimeString()}] InnoDB: Initializing buffer pool, total size = 16M, instances = 1, chunk size = 16M\n` +
+                           `[${new Date().toLocaleTimeString()}] InnoDB: Completed initialization of buffer pool\n` +
+                           `[${new Date().toLocaleTimeString()}] InnoDB: 128 out of 128 rollback segments are active.\n`,
+                    
+                    filezilla: `[${new Date().toLocaleTimeString()}] FileZilla Server 0.9.60 beta\n` +
+                               `[${new Date().toLocaleTimeString()}] started on port 21\n` +
+                               `[${new Date().toLocaleTimeString()}] Server online\n` +
+                               `[${new Date().toLocaleTimeString()}] Listening on 0.0.0.0:21\n` +
+                               `[${new Date().toLocaleTimeString()}] Server is online and waiting for connections\n`,
+                    
+                    mercury: `[${new Date().toLocaleTimeString()}] Mercury/32 v4.62 SMTP Server ready\n` +
+                             `[${new Date().toLocaleTimeString()}] Mercury/32 v4.62 POP3 Server ready\n` +
+                             `[${new Date().toLocaleTimeString()}] Mercury/32 v4.62 IMAP4 Server ready\n` +
+                             `[${new Date().toLocaleTimeString()}] Mercury/32 v4.62 ESMTP Server ready\n` +
+                             `[${new Date().toLocaleTimeString()}] Mercury/32 v4.62 SMTP Server ready\n`,
+                    
+                    tomcat: `[${new Date().toLocaleTimeString()}] Starting Servlet Engine: Apache Tomcat/9.0.41\n` +
+                             `[${new Date().toLocaleTimeString()}] Deploying web application directory [${settings.xamppPath || 'C:\\xampp'}\\tomcat\\webapps\\docs]\n` +
+                             `[${new Date().toLocaleTimeString()}] Deployment of web application directory [${settings.xamppPath || 'C:\\xampp'}\\tomcat\\webapps\\docs] has finished in [1,162] ms\n` +
+                             `[${new Date().toLocaleTimeString()}] Starting ProtocolHandler ["http-nio-8080"]\n` +
+                             `[${new Date().toLocaleTimeString()}] Server startup in [2,012] milliseconds\n`
+                };
+                
+                setTimeout(() => {
+                    logContent.textContent = logs[service] || 'No logs available for this service';
+                    hideLoading();
+                }, 500);
+            }
+            
+            // Loading overlay functions
+            function showLoading() {
+                document.getElementById('loading-overlay').classList.add('active');
+            }
+            
+            function hideLoading() {
+                document.getElementById('loading-overlay').classList.remove('active');
+            }
+            
+            // Notification function
+            function showNotification(message, type) {
+                if (!settings.notifications) return;
+                
+                const notification = document.getElementById('notification');
+                const notificationMessage = document.getElementById('notification-message');
+                
+                notificationMessage.textContent = message;
+                notification.className = 'notification';
+                
+                if (type === 'error') {
+                    notification.classList.add('error');
+                } else if (type === 'info') {
+                    notification.classList.add('info');
+                } else {
+                    notification.classList.add('success');
+                }
+                
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            // Initialize with Apache logs
+            updateLogs('apache');
+        });
+    </script>
+</body>
+</html>
